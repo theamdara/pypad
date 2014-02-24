@@ -1,4 +1,33 @@
-#!/usr/bin/python
+"""
+
+    KeepNote
+    Python Shell Dialog
+
+"""
+
+#
+#  KeepNote
+#  Copyright (c) 2008-2009 Matt Rasmussen
+#  Author: Matt Rasmussen <rasmus@alum.mit.edu>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ctrl + enter = execute
+# select + ctrl + enter = execute selected
+# shift + enter = clear output
+# ctrl + s + select = save the editor to python dir with selected as the file name
+# ctrl + u + select = update the editor to python dir with selected as the file name
 # python imports
 import os
 import sys
@@ -11,6 +40,11 @@ pygtk.require('2.0')
 import gtk
 import gtk.gdk
 import pango
+
+
+# keepnote imports
+#import keepnote
+#from keepnote.gui import Action
 
 
 def move_to_start_of_line(it):
@@ -100,7 +134,14 @@ class PythonDialog ():
         self.editor = gtk.TextView()
         #self.editor = editor.set_buffer(buffer1)
         self.editor.connect("key-press-event", self.on_key_press_event)
-        f = pango.FontDescription("Courier New")
+        
+        #self.editor.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse('black'))
+        #self.editor.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse('green'))
+        self.editor.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse('black'))
+        self.editor.modify_text(gtk.STATE_NORMAL,gtk.gdk.color_parse('#85d6ff'))
+        
+        #f = pango.FontDescription("Courier New 14")
+        f = pango.FontDescription("Monospace 12")
         self.editor.modify_font(f)
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -112,7 +153,12 @@ class PythonDialog ():
         #self.output = gtk.TextView()
         self.output = gtk.TextView(buffer=buffer1)
         self.output.set_wrap_mode(gtk.WRAP_WORD)
-        f = pango.FontDescription("Courier New")
+        
+        self.output.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse('black'))
+        self.output.modify_text(gtk.STATE_NORMAL,gtk.gdk.color_parse('#85d6ff'))
+        
+        #f = pango.FontDescription("Courier New 14")
+        f = pango.FontDescription("Monospace 12")
         self.output.modify_font(f)
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -146,6 +192,9 @@ class PythonDialog ():
             event.state & gtk.gdk.CONTROL_MASK):
             # execute
             self.execute_buffer()
+            buf = self.output.get_buffer()
+            mark = buf.get_insert()
+            self.output.scroll_mark_onscreen(mark)
             return True
             
         if (event.keyval == gtk.keysyms.Return and
@@ -256,12 +305,14 @@ class PythonDialog ():
         if len(sel) > 0:
             # get selection
             start, end = sel
-            self.output_text("executing selection:\n", "info")
+            #self.output_text("executing selection:\n", "info")
+            self.output_text("=" * 25 + "\n", "info")
         else:
             # get all text
             start = buf.get_start_iter()
             end = buf.get_end_iter()
-            self.output_text("executing buffer:\n", "info")
+            #self.output_text("executing buffer:\n", "info")
+            self.output_text("=" * 25 + "\n", "info")
 
         # get text in selection/buffer
         text = start.get_text(end)
@@ -302,7 +353,19 @@ class PythonDialog ():
         #print text
 
 
- 
+    #def print_info(self):
+
+        #print "COMMON INFORMATION"
+        #print "=================="
+        #print
+
+        #keepnote.print_runtime_info(sys.stdout)
+
+        #print "Open notebooks"
+        #print "--------------"
+        #print "\n".join(n.get_path() for n in self.app.iter_notebooks())
+        
+
 
 def execute(code, vars, stdout, stderr):
     """Execute user's python code"""
@@ -337,9 +400,41 @@ def list_commands(app):
             print " -- " + command.help,
         print
 
+#basedir = keepnote.get_basedir()
+#app = keepnote.KeepNote(basedir)
+#app.init()
+#s = gtk.main()
+#j = PythonDialog(s)
+#j.show()
 
+#help(app)
+
+#app.open_notebook("/home/tun/test")
+#gtk.main()
+#app.get_command()
+#help(keepnote.gui)
+#list_commands(app)
+#app.new_window()
+
+#k = Action.new_window()
+
+
+#help(Action)
+#Action.activate(keepnote)
+
+#help(keepnote)
+#help( keepnote.extension)
+
+#help(keepnote.gui.FileChooserDialog)
+#help(keepnote.gui)
+#j = keepnote.gui.KeepNote()
+#j.open_notebook("/home/tun/test")
+#j.new_window()
+
+#k = keepnote.gui.FileChooserDialog()
+#k.run()
+#k.run()
 
 o = PythonDialog()
 o.show()
 gtk.main()
-
